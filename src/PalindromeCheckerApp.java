@@ -1,57 +1,95 @@
+//version 4.0
+//author adhithiya m
+//use case4: Character Array Based Palindrome Check
 
-import java.util.Scanner;
-
+import java.util.*;
 public class PalindromeCheckerApp {
 
-    public static boolean isPalindrome(String text) {
+    static class Node {
+        char data;
+        Node next;
 
-        String cleaned = text.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-
-
-        String reversed = new StringBuilder(cleaned).reverse().toString();
-
-        return cleaned.equals(reversed);
+        Node(char data) {
+            this.data = data;
+            this.next = null;
+        }
     }
 
     public static void main(String[] args) {
+        System.out.println("Welcome to Palindrome Checker App Management System");
         Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter a string to check palindrome: ");
+        String input = scanner.nextLine().toLowerCase();
 
-        System.out.println("Palindrome Checker  ");
-        System.out.print("Enter text: ");
-        String input = scanner.nextLine();
+        Node head = null;
+        Node tail = null;
 
-        if (isPalindrome(input)) {
-            System.out.println(" It's a Palindrome!");
+        for (char c : input.toCharArray()) {
+            if (Character.isLetterOrDigit(c)) {
+                Node newNode = new Node(c);
+                if (head == null) {
+                    head = newNode;
+                    tail = newNode;
+                } else {
+                    tail.next = newNode;
+                    tail = newNode;
+                }
+            }
+        }
+
+        if (head == null || head.next == null) {
+            System.out.println("\"" + input + "\" is a Palindrome.");
+            scanner.close();
+            return;
+        }
+
+        Node slow = head;
+        Node fast = head;
+
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        Node secondHalf = reverse(slow);
+        Node copySecondHalf = secondHalf;
+
+        Node firstHalf = head;
+        boolean isPalindrome = true;
+
+        while (secondHalf != null) {
+            if (firstHalf.data != secondHalf.data) {
+                isPalindrome = false;
+                break;
+            }
+            firstHalf = firstHalf.next;
+            secondHalf = secondHalf.next;
+        }
+
+        reverse(copySecondHalf);
+
+        if (isPalindrome) {
+            System.out.println("\"" + input + "\" is a Palindrome.");
         } else {
-            System.out.println("Not a Palindrome.");
+            System.out.println("\"" + input + "\" is NOT a Palindrome.");
         }
 
         scanner.close();
     }
-}
 
-public static boolean isPalindrome(String text) {
-    // Remove non-alphanumeric characters and convert to lowercase
-    String cleaned = text.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+    private static Node reverse(Node head) {
+        Node prev = null;
+        Node current = head;
+        Node next = null;
 
-    // Reverse the string
-    String reversed = new StringBuilder(cleaned).reverse().toString();
+        while (current != null) {
+            next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+        }
 
-    return cleaned.equals(reversed);
-}
+        return prev;
 
-public static void main(String[] args) {
-    Scanner scanner = new Scanner(System.in);
-
-    System.out.println("Palindrome Checker");
-    System.out.print("Enter text: ");
-    String input = scanner.nextLine();
-
-    if (isPalindrome(input)) {
-        System.out.println("It's a Palindrome!");
-    } else {
-        System.out.println("Not a Palindrome.");
     }
-
-    scanner.close();
 }
