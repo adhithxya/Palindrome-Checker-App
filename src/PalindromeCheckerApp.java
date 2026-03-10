@@ -1,57 +1,58 @@
+//version 4.0
+//author adhithiya m
+//use case4: Character Array Based Palindrome Check
+import java.util.*;
+interface PalindromeStrategy {
+    boolean check(String input);
+}
 
-import java.util.Scanner;
+class StackStrategy implements PalindromeStrategy {
 
-public class PalindromeCheckerApp {
+    public boolean check(String input) {
+        String normalized = input.replaceAll("\\s+", "").toLowerCase();
+        Stack<Character> stack = new Stack<>();
 
-    public static boolean isPalindrome(String text) {
-
-        String cleaned = text.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-
-
-        String reversed = new StringBuilder(cleaned).reverse().toString();
-
-        return cleaned.equals(reversed);
-    }
-
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Palindrome Checker  ");
-        System.out.print("Enter text: ");
-        String input = scanner.nextLine();
-
-        if (isPalindrome(input)) {
-            System.out.println(" It's a Palindrome!");
-        } else {
-            System.out.println("Not a Palindrome.");
+        for (char c : normalized.toCharArray()) {
+            stack.push(c);
         }
 
-        scanner.close();
+        for (char c : normalized.toCharArray()) {
+            if (c != stack.pop()) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
-public static boolean isPalindrome(String text) {
-    // Remove non-alphanumeric characters and convert to lowercase
-    String cleaned = text.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+class DequeStrategy implements PalindromeStrategy {
 
-    // Reverse the string
-    String reversed = new StringBuilder(cleaned).reverse().toString();
+    public boolean check(String input) {
+        String normalized = input.replaceAll("\\s+", "").toLowerCase();
+        Deque<Character> deque = new ArrayDeque<>();
 
-    return cleaned.equals(reversed);
+        for (char c : normalized.toCharArray()) {
+            deque.addLast(c);
+        }
+
+        while (deque.size() > 1) {
+            if (!deque.removeFirst().equals(deque.removeLast())) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
 
-public static void main(String[] args) {
-    Scanner scanner = new Scanner(System.in);
+class PalindromeService {
 
-    System.out.println("Palindrome Checker");
-    System.out.print("Enter text: ");
-    String input = scanner.nextLine();
+    private PalindromeStrategy strategy;
 
-    if (isPalindrome(input)) {
-        System.out.println("It's a Palindrome!");
-    } else {
-        System.out.println("Not a Palindrome.");
+    public PalindromeService(PalindromeStrategy strategy) {
+        this.strategy = strategy;
     }
 
-    scanner.close();
+    public boolean checkPalindrome(String input) {
+        return strategy.check(input);
+    }
 }
